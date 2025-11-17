@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎮 Agente Buscador de Tesoros - Q-Learning</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            padding: 30px;
+        }
+
+        .panel {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .panel h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .config-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .input-group label {
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .input-group input {
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .input-group small {
+            margin-top: 5px;
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 15px 30px;
+            font-size: 1.1em;
+            font-weight: bold;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            flex: 1;
+            min-width: 150px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #56ab2f 0%, #a8e063 100%);
+            color: white;
+        }
+
+        .btn-info {
+            background: linear-gradient(135deg, #2193b0 0%, #6dd5ed 100%);
+            color: white;
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+
+        .status-box {
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 5px solid;
+        }
+
+        .status-success {
+            background: #d4edda;
+            border-color: #28a745;
+            color: #155724;
+        }
+
+        .status-info {
+            background: #d1ecf1;
+            border-color: #17a2b8;
+            color: #0c5460;
+        }
+
+        .status-warning {
+            background: #fff3cd;
+            border-color: #ffc107;
+            color: #856404;
+        }
+
+        .status-error {
+            background: #f8d7da;
+            border-color: #dc3545;
+            color: #721c24;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .stat-card h3 {
+            color: #667eea;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .stat-card p {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .graficas-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .grafica-container {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .grafica-container img {
+            width: 100%;
+            border-radius: 8px;
+        }
+
+        .grafica-container h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        #loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .spinner {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #667eea;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .grid-visual {
+            max-width: 500px;
+            margin: 20px auto;
+        }
+
+        .grid-visual img {
+            width: 100%;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .legend-box {
+            width: 30px;
+            height: 30px;
+            border-radius: 5px;
+            border: 2px solid #333;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            background: #f8f9fa;
+            color: #666;
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎮 Agente Buscador de Tesoros</h1>
+            <p>Entrenamiento con Q-Learning - Reinforcement Learning</p>
+        </header>
+
+        <div class="main-content">
+            <!-- Panel de Configuración -->
+            <div class="panel">
+                <h2>⚙️ Configuración del Entorno</h2>
+                
+                <div class="config-grid">
+                    <div class="input-group">
+                        <label for="size">Tamaño del Grid:</label>
+                        <input type="number" id="size" value="5" min="3" max="15">
+                        <small>Tamaño de la cuadrícula (NxN)</small>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="num_trampas">Número de Trampas:</label>
+                        <input type="number" id="num_trampas" value="5" min="0" max="20">
+                        <small>Obstáculos a evitar</small>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="num_episodios">Número de Episodios:</label>
+                        <input type="number" id="num_episodios" value="500" min="100" max="2000" step="100">
+                        <small>Veces que el agente practicará</small>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="alpha">Tasa de Aprendizaje (α):</label>
+                        <input type="number" id="alpha" value="0.1" min="0.01" max="1" step="0.01">
+                        <small>Qué tan rápido aprende (0.01 - 1.0)</small>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="gamma">Factor de Descuento (γ):</label>
+                        <input type="number" id="gamma" value="0.9" min="0" max="1" step="0.05">
+                        <small>Importancia del futuro (0 - 1.0)</small>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="epsilon">Tasa de Exploración (ε):</label>
+                        <input type="number" id="epsilon" value="0.1" min="0" max="1" step="0.05">
+                        <small>Probabilidad de explorar (0 - 1.0)</small>
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button class="btn-primary" onclick="configurarEntorno()">🔧 Configurar Entorno</button>
+                    <button class="btn-success" id="btnEntrenar" onclick="entrenarAgente()" disabled>🎓 Entrenar Agente</button>
+                    <button class="btn-info" id="btnProbar" onclick="probarAgente()" disabled>🧪 Probar Agente</button>
+                    <button class="btn-warning" onclick="location.reload()">🔄 Reiniciar Todo</button>
+                </div>
+            </div>
+
+            <!-- Estado del Sistema -->
+            <div id="statusBox" style="display: none;"></div>
+
+            <!-- Loading -->
+            <div id="loading">
+                <div class="spinner"></div>
+                <h3>Procesando...</h3>
+                <p id="loadingText">Por favor espera...</p>
+            </div>
+
+            <!-- Visualización del Grid -->
+            <div id="gridPanel" class="panel" style="display: none;">
+                <h2>🗺️ Visualización del Entorno</h2>
+                <div class="grid-visual">
+                    <img id="gridImage" src="" alt="Grid del entorno">
+                </div>
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-box" style="background: lightblue;"></div>
+                        <span>🏁 Inicio</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-box" style="background: yellow;"></div>
+                        <span>💎 Tesoro</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-box" style="background: rgba(255,0,0,0.3);"></div>
+                        <span>💀 Trampa</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Estadísticas -->
+            <div id="statsPanel" class="panel" style="display: none;">
+                <h2>📊 Estadísticas del Entrenamiento</h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3 id="statRecompensa">-</h3>
+                        <p>Recompensa Promedio</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3 id="statPasos">-</h3>
+                        <p>Pasos Promedio</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3 id="statExito">-</h3>
+                        <p>Tasa de Éxito</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gráficas -->
+            <div id="graficasPanel" class="panel" style="display: none;">
+                <h2>📈 Visualizaciones del Aprendizaje</h2>
+                <div class="graficas-grid">
+                    <div class="grafica-container">
+                        <h3>Dashboard Completo</h3>
+                        <img id="graficaDashboard" src="/graficas/dashboard_completo.png" alt="Dashboard">
+                    </div>
+                    <div class="grafica-container">
+                        <h3>Evolución de Recompensas</h3>
+                        <img id="graficaRecompensas" src="/graficas/evolucion_recompensas.png" alt="Recompensas">
+                    </div>
+                    <div class="grafica-container">
+                        <h3>Número de Pasos</h3>
+                        <img id="graficaPasos" src="/graficas/evolucion_pasos.png" alt="Pasos">
+                    </div>
+                    <div class="grafica-container">
+                        <h3>Tasa de Éxito</h3>
+                        <img id="graficaExito" src="/graficas/tasa_exito.png" alt="Éxito">
+                    </div>
+                    <div class="grafica-container">
+                        <h3>Mejor Trayectoria</h3>
+                        <img id="graficaTrayectoria" src="/graficas/trayectoria_agente.png" alt="Trayectoria">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>🎓 Proyecto de Machine Learning - Reinforcement Learning con Q-Learning</p>
+            <p>Desarrollado con Flask, Python, NumPy y Matplotlib</p>
+        </div>
+    </div>
+
+    <script>
+        function mostrarMensaje(mensaje, tipo = 'info') {
+            const statusBox = document.getElementById('statusBox');
+            statusBox.className = `status-box status-${tipo}`;
+            statusBox.innerHTML = mensaje;
+            statusBox.style.display = 'block';
+            
+            setTimeout(() => {
+                statusBox.style.display = 'none';
+            }, 5000);
+        }
+
+        function mostrarLoading(texto = 'Procesando...') {
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('loadingText').textContent = texto;
+        }
+
+        function ocultarLoading() {
+            document.getElementById('loading').style.display = 'none';
+        }
+
+        async function configurarEntorno() {
+            const config = {
+                size: parseInt(document.getElementById('size').value),
+                num_trampas: parseInt(document.getElementById('num_trampas').value),
+                num_episodios: parseInt(document.getElementById('num_episodios').value),
+                alpha: parseFloat(document.getElementById('alpha').value),
+                gamma: parseFloat(document.getElementById('gamma').value),
+                epsilon: parseFloat(document.getElementById('epsilon').value)
+            };
+
+            mostrarLoading('Configurando entorno...');
+
+            try {
+                const response = await fetch('/configurar', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(config)
+                });
+
+                const data = await response.json();
+
+                if (data.status === 'success') {
+                    mostrarMensaje(`✅ ${data.mensaje}<br>Tamaño: ${data.entorno.size}x${data.entorno.size} | Trampas: ${data.entorno.num_trampas}`, 'success');
+                    document.getElementById('btnEntrenar').disabled = false;
+                    
+                    // Visualizar grid
+                    await visualizarGrid();
+                } else {
+                    mostrarMensaje(`❌ ${data.mensaje}`, 'error');
+                }
+            } catch (error) {
+                mostrarMensaje(`❌ Error: ${error.message}`, 'error');
+            } finally {
+                ocultarLoading();
+            }
+        }
+
+        async function visualizarGrid() {
+            try {
+                const response = await fetch('/visualizar_grid');
+                const data = await response.json();
+
+                if (data.status === 'success') {
+                    document.getElementById('gridImage').src = data.imagen;
+                    document.getElementById('gridPanel').style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Error al visualizar grid:', error);
+            }
+        }
+
+        async function entrenarAgente() {
+            mostrarLoading('Entrenando agente... Esto puede tomar unos minutos.');
+            document.getElementById('btnEntrenar').disabled = true;
+
+            try {
+                const response = await fetch('/entrenar', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'}
+                });
+
+                const data = await response.json();
+
+                if (data.status === 'success') {
+                    mostrarMensaje(`✅ ${data.mensaje}`, 'success');
+                    
+                    // Mostrar estadísticas
+                    document.getElementById('statRecompensa').textContent = 
+                        data.estadisticas.recompensa_promedio_final.toFixed(2);
+                    document.getElementById('statPasos').textContent = 
+                        data.estadisticas.pasos_promedio_final.toFixed(1);
+                    document.getElementById('statExito').textContent = 
+                        data.estadisticas.tasa_exito_final.toFixed(1) + '%';
+                    
+                    document.getElementById('statsPanel').style.display = 'block';
+                    
+                    // Cargar gráficas con timestamp para evitar cache
+                    const timestamp = new Date().getTime();
+                    document.getElementById('graficaDashboard').src = `/graficas/dashboard_completo.png?t=${timestamp}`;
+                    document.getElementById('graficaRecompensas').src = `/graficas/evolucion_recompensas.png?t=${timestamp}`;
+                    document.getElementById('graficaPasos').src = `/graficas/evolucion_pasos.png?t=${timestamp}`;
+                    document.getElementById('graficaExito').src = `/graficas/tasa_exito.png?t=${timestamp}`;
+                    document.getElementById('graficaTrayectoria').src = `/graficas/trayectoria_agente.png?t=${timestamp}`;
+                    
+                    document.getElementById('graficasPanel').style.display = 'block';
+                    document.getElementById('btnProbar').disabled = false;
+                } else {
+                    mostrarMensaje(`❌ ${data.mensaje}`, 'error');
+                    document.getElementById('btnEntrenar').disabled = false;
+                }
+            } catch (error) {
+                mostrarMensaje(`❌ Error: ${error.message}`, 'error');
+                document.getElementById('btnEntrenar').disabled = false;
+            } finally {
+                ocultarLoading();
+            }
+        }
+
+        async function probarAgente() {
+            mostrarLoading('Probando agente entrenado...');
+
+            try {
+                const response = await fetch('/probar', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'}
+                });
+
+                const data = await response.json();
+
+                if (data.status === 'success') {
+                    const msg = `✅ Prueba completada:<br>
+                                 Recompensa: ${data.resultados.recompensa_promedio.toFixed(2)}<br>
+                                 Pasos: ${data.resultados.pasos_promedio.toFixed(1)}<br>
+                                 Tasa de éxito: ${data.resultados.tasa_exito.toFixed(1)}%`;
+                    mostrarMensaje(msg, 'success');
+                } else {
+                    mostrarMensaje(`❌ ${data.mensaje}`, 'error');
+                }
+            } catch (error) {
+                mostrarMensaje(`❌ Error: ${error.message}`, 'error');
+            } finally {
+                ocultarLoading();
+            }
+        }
+    </script>
+</body>
+</html>

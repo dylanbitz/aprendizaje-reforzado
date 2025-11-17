@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agente Buscador de Tesoros</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .main-content {
+            padding: 30px;
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 30px;
+        }
+
+        .panel {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .panel h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .input-group small {
+            display: block;
+            margin-top: 5px;
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+            font-weight: bold;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #56ab2f 0%, #a8e063 100%);
+            color: white;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
+            color: white;
+        }
+
+        #canvas-container {
+            position: relative;
+            background: #f0f0f0;
+            border-radius: 15px;
+            padding: 20px;
+            min-height: 500px;
+        }
+
+        #gridCanvas {
+            border: 3px solid #667eea;
+            border-radius: 10px;
+            display: block;
+            margin: 0 auto;
+            background: white;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-card h3 {
+            color: #667eea;
+            font-size: 2em;
+            margin-bottom: 5px;
+        }
+
+        .stat-card p {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        #chart-container {
+            margin-top: 20px;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        #chart {
+            width: 100%;
+            height: 300px;
+        }
+
+        .status-message {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .status-success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .status-info {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .training {
+            animation: pulse 1s infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎮 Agente Buscador de Tesoros</h1>
+            <p>Q-Learning en Tiempo Real</p>
+        </header>
+
+        <div class="main-content">
+            <!-- Panel de Control -->
+            <div>
+                <div class="panel">
+                    <h2>⚙️ Configuración</h2>
+
+                    <div class="input-group">
+                        <label for="size">Tamaño del Grid:</label>
+                        <input type="number" id="size" value="10" min="5" max="20">
+                        <small>Tamaño de la cuadrícula</small>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="num_trampas">Número de Trampas:</label>
+                        <input type="number" id="num_trampas" value="10" min="1" max="50">
+                        <small>Obstáculos a evitar</small>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="max_pasos">Máx. Pasos por Episodio:</label>
+                        <input type="number" id="max_pasos" value="200" min="50" max="500">
+                        <small>Límite de pasos</small>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="num_episodios">Número de Episodios:</label>
+                        <input type="number" id="num_episodios" value="100" min="10" max="500">
+                        <small>Veces que practicará</small>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="velocidad">Velocidad (ms):</label>
+                        <input type="range" id="velocidad" min="1" max="100" value="10">
+                        <small>Delay entre pasos: <span id="velocidad-valor">10</span>ms</small>
+                    </div>
+
+                    <button class="btn-primary" onclick="configurar()">🔧 Configurar</button>
+                    <button class="btn-success" id="btnIniciar" onclick="iniciarEntrenamiento()" disabled>▶️ Iniciar</button>
+                    <button class="btn-danger" id="btnDetener" onclick="detenerEntrenamiento()" disabled>⏹️ Detener</button>
+                </div>
+
+                <!-- Estadísticas -->
+                <div class="panel" style="margin-top: 20px;">
+                    <h2>📊 Métricas</h2>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <h3 id="episodioActual">0</h3>
+                            <p>Episodio Actual</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3 id="pasosActuales">0</h3>
+                            <p>Pasos</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3 id="victorias">0</h3>
+                            <p>Victorias</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3 id="tasaExito">0%</h3>
+                            <p>Tasa de Éxito</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Visualización -->
+            <div>
+                <div id="status-message"></div>
+
+                <div id="canvas-container">
+                    <canvas id="gridCanvas"></canvas>
+                </div>
+
+                <div id="chart-container">
+                    <canvas id="chart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        let ws = null;
+        let canvas = document.getElementById('gridCanvas');
+        let ctx = canvas.getContext('2d');
+        let chart = null;
+        let chartData = {
+            episodios: [],
+            pasos: [],
+            colores: []
+        };
+
+        // Actualizar slider de velocidad
+        document.getElementById('velocidad').addEventListener('input', (e) => {
+            document.getElementById('velocidad-valor').textContent = e.target.value;
+        });
+
+        function mostrarMensaje(mensaje, tipo = 'info') {
+            const statusDiv = document.getElementById('status-message');
+            statusDiv.className = `status-message status-${tipo}`;
+            statusDiv.textContent = mensaje;
+            statusDiv.style.display = 'block';
+        }
+
+        async function configurar() {
+            const config = {
+                size: parseInt(document.getElementById('size').value),
+                num_trampas: parseInt(document.getElementById('num_trampas').value),
+                max_pasos: parseInt(document.getElementById('max_pasos').value),
+                alpha: 0.1,
+                gamma: 0.9,
+                epsilon: 0.1
+            };
+
+            try {
+                const response = await fetch('/api/configurar', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(config)
+                });
+
+                const data = await response.json();
+
+                if (data.status === 'success') {
+                    mostrarMensaje('✅ Entorno configurado correctamente', 'success');
+                    document.getElementById('btnIniciar').disabled = false;
+                    dibujarGrid(data.entorno);
+                    inicializarGrafica();
+                } else {
+                    mostrarMensaje('❌ Error al configurar: ' + data.mensaje, 'error');
+                }
+            } catch (error) {
+                mostrarMensaje('❌ Error: ' + error.message, 'error');
+            }
+        }
+
+        function inicializarGrafica() {
+            chartData = {
+                episodios: [],
+                pasos: [],
+                colores: []
+            };
+
+            if (chart) {
+                chart.destroy();
+            }
+
+            const chartCtx = document.getElementById('chart').getContext('2d');
+            chart = new Chart(chartCtx, {
+                type: 'bar',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Pasos por Episodio',
+                        data: [],
+                        backgroundColor: [],
+                        borderColor: [],
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Número de Pasos'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Episodio'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: true
+                        },
+                        title: {
+                            display: true,
+                            text: 'Historial de Entrenamiento (Verde=Éxito, Rojo=Fallo)'
+                        }
+                    }
+                }
+            });
+        }
+
+        function actualizarGrafica(episodio, pasos, exito) {
+            const color = exito ? 'rgba(75, 192, 192, 0.8)' : 'rgba(255, 99, 132, 0.8)';
+            const borderColor = exito ? 'rgba(75, 192, 192, 1)' : 'rgba(255, 99, 132, 1)';
+
+            chartData.episodios.push(episodio);
+            chartData.pasos.push(pasos);
+            chartData.colores.push({bg: color, border: borderColor});
+
+            // Mantener solo últimos 50 episodios
+            if (chartData.episodios.length > 50) {
+                chartData.episodios.shift();
+                chartData.pasos.shift();
+                chartData.colores.shift();
+            }
+
+            chart.data.labels = chartData.episodios;
+            chart.data.datasets[0].data = chartData.pasos;
+            chart.data.datasets[0].backgroundColor = chartData.colores.map(c => c.bg);
+            chart.data.datasets[0].borderColor = chartData.colores.map(c => c.border);
+            chart.update('none');
+        }
+
+        function dibujarGrid(grid) {
+            const cellSize = Math.min(500 / grid.size, 50);
+            canvas.width = grid.size * cellSize;
+            canvas.height = grid.size * cellSize;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Dibujar grid
+            for (let i = 0; i < grid.size; i++) {
+                for (let j = 0; j < grid.size; j++) {
+                    ctx.strokeStyle = '#ddd';
+                    ctx.strokeRect(j * cellSize, i * cellSize, cellSize, cellSize);
+                }
+            }
+
+            // Dibujar trampas
+            grid.trampas.forEach(trampa => {
+                ctx.fillStyle = 'rgba(255, 0, 0, 0.3)';
+                ctx.fillRect(trampa[1] * cellSize, trampa[0] * cellSize, cellSize, cellSize);
+                ctx.fillStyle = 'red';
+                ctx.font = `${cellSize * 0.5}px Arial`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('💀', (trampa[1] + 0.5) * cellSize, (trampa[0] + 0.5) * cellSize);
+            });
+
+            // Dibujar tesoro
+            ctx.fillStyle = 'rgba(255, 215, 0, 0.3)';
+            ctx.fillRect(grid.tesoro[1] * cellSize, grid.tesoro[0] * cellSize, cellSize, cellSize);
+            ctx.fillStyle = 'gold';
+            ctx.font = `${cellSize * 0.6}px Arial`;
+            ctx.fillText('💎', (grid.tesoro[1] + 0.5) * cellSize, (grid.tesoro[0] + 0.5) * cellSize);
+
+            // Dibujar agente
+            ctx.fillStyle = 'rgba(0, 0, 255, 0.3)';
+            ctx.fillRect(grid.agente[1] * cellSize, grid.agente[0] * cellSize, cellSize, cellSize);
+            ctx.fillStyle = 'blue';
+            ctx.font = `${cellSize * 0.6}px Arial`;
+            ctx.fillText('🤖', (grid.agente[1] + 0.5) * cellSize, (grid.agente[0] + 0.5) * cellSize);
+        }
+
+        function iniciarEntrenamiento() {
+            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsUrl = `${protocol}//${window.location.host}/ws/entrenar`;
+
+            ws = new WebSocket(wsUrl);
+
+            ws.onopen = () => {
+                mostrarMensaje('🔄 Entrenamiento en progreso...', 'info');
+                document.getElementById('btnIniciar').disabled = true;
+                document.getElementById('btnDetener').disabled = false;
+                canvas.classList.add('training');
+
+                const config = {
+                    num_episodios: parseInt(document.getElementById('num_episodios').value),
+                    velocidad: parseInt(document.getElementById('velocidad').value) / 1000
+                };
+
+                ws.send(JSON.stringify(config));
+            };
+
+            ws.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+
+                if (data.tipo === 'paso') {
+                    dibujarGrid(data.grid);
+                    document.getElementById('episodioActual').textContent = data.episodio;
+                    document.getElementById('pasosActuales').textContent = data.pasos;
+                }
+                else if (data.tipo === 'episodio_completo') {
+                    document.getElementById('victorias').textContent = data.victorias;
+                    document.getElementById('tasaExito').textContent = data.tasa_exito.toFixed(1) + '%';
+                    actualizarGrafica(data.episodio, data.pasos, data.exito);
+                }
+                else if (data.tipo === 'entrenamiento_completo') {
+                    mostrarMensaje(`✅ Entrenamiento completado! ${data.victorias}/${data.episodios_totales} victorias (${data.tasa_exito_final.toFixed(1)}%)`, 'success');
+                    document.getElementById('btnIniciar').disabled = false;
+                    document.getElementById('btnDetener').disabled = true;
+                    canvas.classList.remove('training');
+                    ws.close();
+                }
+                else if (data.tipo === 'error') {
+                    mostrarMensaje('❌ Error: ' + data.mensaje, 'error');
+                }
+            };
+
+            ws.onerror = () => {
+                mostrarMensaje('❌ Error de conexión', 'error');
+                document.getElementById('btnIniciar').disabled = false;
+                document.getElementById('btnDetener').disabled = true;
+                canvas.classList.remove('training');
+            };
+
+            ws.onclose = () => {
+                canvas.classList.remove('training');
+            };
+        }
+
+        async function detenerEntrenamiento() {
+            if (ws) {
+                ws.close();
+            }
+
+            await fetch('/api/detener', {method: 'POST'});
+
+            mostrarMensaje('⏹️ Entrenamiento detenido', 'info');
+            document.getElementById('btnIniciar').disabled = false;
+            document.getElementById('btnDetener').disabled = true;
+            canvas.classList.remove('training');
+        }
+    </script>
+</body>
+</html>
