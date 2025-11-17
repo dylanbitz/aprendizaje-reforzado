@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import numpy as np
 import random
 
@@ -20,14 +19,11 @@ class GridWorld:
         self.num_trampas = num_trampas
         self.max_pasos = max_pasos
 
-        # Posiciones fijas
         self.inicio = (0, 0)
         self.tesoro = (size-1, size-1)
 
-        # Generar trampas aleatorias
         self.trampas = self._generar_trampas()
 
-        # Estado del agente
         self.posicion_agente = self.inicio
         self.pasos_actuales = 0
 
@@ -60,7 +56,7 @@ class GridWorld:
         x, y = self.posicion_agente
         self.pasos_actuales += 1
 
-        # Calcular nueva posición
+        #posiciones
         if accion == 0:  # Arriba
             nueva_x, nueva_y = x - 1, y
         elif accion == 1:  # Abajo
@@ -70,38 +66,32 @@ class GridWorld:
         else:  # Derecha
             nueva_x, nueva_y = x, y + 1
 
-        # Verificar límites (choca con pared)
         if nueva_x < 0 or nueva_x >= self.size or nueva_y < 0 or nueva_y >= self.size:
-            recompensa = -1
+            recompensa = -10
             terminado = False
             info = {"evento": "pared", "pasos": self.pasos_actuales}
             return self.posicion_agente, recompensa, terminado, info
 
-        # Actualizar posición
         self.posicion_agente = (nueva_x, nueva_y)
 
-        # Verificar si llegó al tesoro
         if self.posicion_agente == self.tesoro:
             recompensa = 100
             terminado = True
             info = {"evento": "tesoro", "pasos": self.pasos_actuales, "exito": True}
             return self.posicion_agente, recompensa, terminado, info
 
-        # Verificar si cayó en trampa
         if self.posicion_agente in self.trampas:
-            recompensa = -10
+            recompensa = -100
             terminado = False
             info = {"evento": "trampa", "pasos": self.pasos_actuales}
             return self.posicion_agente, recompensa, terminado, info
 
-        # Verificar si superó el límite de pasos
         if self.pasos_actuales >= self.max_pasos:
             recompensa = -1
             terminado = True
             info = {"evento": "max_pasos", "pasos": self.pasos_actuales, "exito": False}
             return self.posicion_agente, recompensa, terminado, info
 
-        # Paso normal
         recompensa = -1
         terminado = False
         info = {"evento": "paso", "pasos": self.pasos_actuales}
