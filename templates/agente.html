@@ -11,10 +11,10 @@
         <header>
             <h1>Agente Buscador de Tesoros</h1>
             <p>Q-Learning en Tiempo Real</p>
+            <a href="{{url_for('index')}}">Volver al Inicio</a>
         </header>
 
         <div class="main-content">
-            <!-- Panel de Control -->
             <div>
                 <div class="panel">
                     <h2>Configuración</h2>
@@ -53,7 +53,7 @@
                     <button class="btn-success" id="btnIniciar" onclick="iniciarEntrenamiento()" disabled>Iniciar</button>
                     <button class="btn-danger" id="btnDetener" onclick="detenerEntrenamiento()" disabled>Detener</button>
                     <a href="/" style="text-decoration: none;">
-                        <button style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; margin-top: 10px;">Inicio</button>
+                        <button style="background: #0a0a0a; color: #ffffff; border: 1px solid #1a1a1a; margin-top: 10px;">Inicio</button>
                     </a>
                 </div>
 
@@ -173,7 +173,7 @@
                         data: [],
                         backgroundColor: [],
                         borderColor: [],
-                        borderWidth: 2
+                        borderWidth: 1
                     }]
                 },
                 options: {
@@ -184,23 +184,41 @@
                             beginAtZero: true,
                             title: {
                                 display: true,
-                                text: 'Número de Pasos'
+                                text: 'Número de Pasos',
+                                color: '#888888'
+                            },
+                            ticks: {
+                                color: '#666666'
+                            },
+                            grid: {
+                                color: '#1a1a1a'
                             }
                         },
                         x: {
                             title: {
                                 display: true,
-                                text: 'Episodio'
+                                text: 'Episodio',
+                                color: '#888888'
+                            },
+                            ticks: {
+                                color: '#666666'
+                            },
+                            grid: {
+                                color: '#1a1a1a'
                             }
                         }
                     },
                     plugins: {
                         legend: {
-                            display: true
+                            display: true,
+                            labels: {
+                                color: '#888888'
+                            }
                         },
                         title: {
                             display: true,
-                            text: 'Historial de Entrenamiento (Verde=Éxito, Rojo=Fallo)'
+                            text: 'Historial de Entrenamiento (Verde=Éxito, Rojo=Fallo)',
+                            color: '#ffffff'
                         }
                     }
                 }
@@ -208,8 +226,8 @@
         }
 
         function actualizarGrafica(episodio, pasos, exito) {
-            const color = exito ? 'rgba(75, 192, 192, 0.8)' : 'rgba(255, 99, 132, 0.8)';
-            const borderColor = exito ? 'rgba(75, 192, 192, 1)' : 'rgba(255, 99, 132, 1)';
+            const color = exito ? 'rgba(0, 255, 0, 0.7)' : 'rgba(255, 0, 0, 0.7)';
+            const borderColor = exito ? 'rgba(0, 255, 0, 1)' : 'rgba(255, 0, 0, 1)';
 
             chartData.episodios.push(episodio);
             chartData.pasos.push(pasos);
@@ -236,36 +254,32 @@
 
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            // Dibujar grid
             for (let i = 0; i < grid.size; i++) {
                 for (let j = 0; j < grid.size; j++) {
-                    ctx.strokeStyle = '#ddd';
+                    ctx.strokeStyle = '#1a1a1a';
                     ctx.strokeRect(j * cellSize, i * cellSize, cellSize, cellSize);
                 }
             }
 
-            // Dibujar trampas
             grid.trampas.forEach(trampa => {
-                ctx.fillStyle = 'rgba(255, 0, 0, 0.3)';
+                ctx.fillStyle = 'rgba(255, 0, 0, 0.2)';
                 ctx.fillRect(trampa[1] * cellSize, trampa[0] * cellSize, cellSize, cellSize);
-                ctx.fillStyle = 'red';
+                ctx.fillStyle = '#ff0000';
                 ctx.font = `${cellSize * 0.5}px Arial`;
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
                 ctx.fillText('💀', (trampa[1] + 0.5) * cellSize, (trampa[0] + 0.5) * cellSize);
             });
 
-            // Dibujar tesoro
-            ctx.fillStyle = 'rgba(255, 215, 0, 0.3)';
+            ctx.fillStyle = 'rgba(255, 215, 0, 0.2)';
             ctx.fillRect(grid.tesoro[1] * cellSize, grid.tesoro[0] * cellSize, cellSize, cellSize);
-            ctx.fillStyle = 'gold';
+            ctx.fillStyle = '#ffd700';
             ctx.font = `${cellSize * 0.6}px Arial`;
             ctx.fillText('💎', (grid.tesoro[1] + 0.5) * cellSize, (grid.tesoro[0] + 0.5) * cellSize);
 
-            // Dibujar agente
-            ctx.fillStyle = 'rgba(0, 0, 255, 0.3)';
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
             ctx.fillRect(grid.agente[1] * cellSize, grid.agente[0] * cellSize, cellSize, cellSize);
-            ctx.fillStyle = 'blue';
+            ctx.fillStyle = '#ffffff';
             ctx.font = `${cellSize * 0.6}px Arial`;
             ctx.fillText('🤖', (grid.agente[1] + 0.5) * cellSize, (grid.agente[0] + 0.5) * cellSize);
         }
