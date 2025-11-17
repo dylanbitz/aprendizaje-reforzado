@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agente Buscador de Tesoros</title>
+    <title>Buscador de Tesoros</title>
     <style>
         * {
             margin: 0;
@@ -18,7 +18,6 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 20px;
         }
 
         .container {
@@ -28,12 +27,6 @@
             padding: 60px;
             text-align: center;
             max-width: 600px;
-            animation: fadeIn 0.5s ease-in;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
         }
 
         h1 {
@@ -75,13 +68,12 @@
 </head>
 <body>
     <div class="container">
-        <div class="emoji">🎮</div>
         <h1>Buscador de Tesoros</h1>
         <p>
             Entrena un agente inteligente usando Q-Learning para encontrar tesoros
             mientras evita trampas. Visualiza su aprendizaje en tiempo real.
         </p>
-        <a href="/agente" class="btn">🚀 Comenzar Entrenamiento</a>
+        <a href="/agente" class="btn">Comenzar Entrenamiento</a>
     </div>
 </body>
 </html>
