@@ -1,0 +1,275 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+    background: #000000;
+    color: #ffffff;
+    line-height: 1.6;
+}
+
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: #000000;
+    border-bottom: 1px solid #1a1a1a;
+    padding: 20px 0;
+    z-index: 100;
+}
+
+.nav-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.nav-content h2 {
+    font-size: 1.25em;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+}
+
+.nav-btn {
+    background: #ffffff;
+    color: #000000;
+    padding: 10px 24px;
+    border: 1px solid #ffffff;
+    text-decoration: none;
+    font-size: 0.875em;
+    font-weight: 500;
+    transition: all 0.15s;
+}
+
+.nav-btn:hover {
+    background: #f0f0f0;
+}
+
+.content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 100px 40px 40px;
+}
+
+.hero {
+    padding: 60px 0 40px;
+    border-bottom: 1px solid #1a1a1a;
+    margin-bottom: 60px;
+}
+
+.hero h1 {
+    font-size: 3.5em;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    margin-bottom: 20px;
+}
+
+.subtitle {
+    font-size: 1.25em;
+    color: #888888;
+    max-width: 800px;
+}
+
+.section {
+    margin-bottom: 80px;
+}
+
+.section h2 {
+    font-size: 2em;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    margin-bottom: 20px;
+    border-left: 3px solid #ffffff;
+    padding-left: 20px;
+}
+
+.section h3 {
+    font-size: 1.25em;
+    font-weight: 600;
+    margin-bottom: 12px;
+}
+
+.section p {
+    color: #cccccc;
+    font-size: 1em;
+    line-height: 1.8;
+}
+
+.intro {
+    font-size: 1.1em;
+    color: #cccccc;
+    line-height: 1.9;
+}
+
+.components-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 20px;
+    margin-top: 30px;
+}
+
+.component-card {
+    background: #0a0a0a;
+    border: 1px solid #1a1a1a;
+    padding: 24px;
+    transition: border-color 0.2s;
+}
+
+.component-card:hover {
+    border-color: #2a2a2a;
+}
+
+.component-card h3 {
+    color: #ffffff;
+    margin-bottom: 12px;
+}
+
+.component-card p {
+    color: #888888;
+    font-size: 0.9em;
+}
+
+.concept-list,
+.algorithm-list,
+.practices-list {
+    margin-top: 30px;
+}
+
+.concept-item,
+.algorithm-item,
+.practice-item {
+    background: #0a0a0a;
+    border: 1px solid #1a1a1a;
+    padding: 24px;
+    margin-bottom: 16px;
+}
+
+.concept-item h3,
+.algorithm-item h3,
+.practice-item h3 {
+    color: #ffffff;
+    margin-bottom: 12px;
+}
+
+.concept-item p,
+.algorithm-item p,
+.practice-item p {
+    color: #888888;
+}
+
+.footer {
+    text-align: center;
+    padding: 40px 0;
+    border-top: 1px solid #1a1a1a;
+    color: #666666;
+    font-size: 0.875em;
+}
+
+.floating-demo {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background: #0a0a0a;
+    border: 1px solid #ffffff;
+    padding: 24px;
+    width: 320px;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.3s;
+    pointer-events: none;
+    z-index: 1000;
+}
+
+.floating-demo.visible {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: all;
+}
+
+.close-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: transparent;
+    border: none;
+    color: #666666;
+    font-size: 24px;
+    cursor: pointer;
+    padding: 4px 8px;
+    transition: color 0.2s;
+}
+
+.close-btn:hover {
+    color: #ffffff;
+}
+
+.demo-content {
+    text-align: center;
+}
+
+.demo-icon {
+    font-size: 3em;
+    margin-bottom: 16px;
+}
+
+.demo-content h3 {
+    font-size: 1.25em;
+    margin-bottom: 12px;
+    color: #ffffff;
+}
+
+.demo-content p {
+    color: #888888;
+    font-size: 0.9em;
+    margin-bottom: 20px;
+}
+
+.demo-btn {
+    display: inline-block;
+    background: #ffffff;
+    color: #000000;
+    padding: 12px 32px;
+    border: 1px solid #ffffff;
+    text-decoration: none;
+    font-size: 0.875em;
+    font-weight: 500;
+    transition: all 0.15s;
+    width: 100%;
+}
+
+.demo-btn:hover {
+    background: #f0f0f0;
+}
+
+@media (max-width: 768px) {
+    .nav-content,
+    .content {
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+
+    .hero h1 {
+        font-size: 2.5em;
+    }
+
+    .section h2 {
+        font-size: 1.5em;
+    }
+
+    .components-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .floating-demo {
+        width: calc(100% - 40px);
+        left: 20px;
+        right: 20px;
+    }
+}

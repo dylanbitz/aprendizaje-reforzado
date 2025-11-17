@@ -1,0 +1,239 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+    background: #000000;
+    color: #ffffff;
+    min-height: 100vh;
+}
+
+.container {
+    max-width: 1800px;
+    margin: 0 auto;
+    background: #000000;
+}
+
+header {
+    background: #000000;
+    color: #ffffff;
+    padding: 40px 40px 20px;
+    border-bottom: 1px solid #1a1a1a;
+}
+
+header h1 {
+    font-size: 2.5em;
+    margin-bottom: 8px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+}
+
+header p {
+    color: #888888;
+    font-size: 1em;
+}
+
+.main-content {
+    padding: 40px;
+    display: grid;
+    grid-template-columns: 380px 1fr;
+    gap: 40px;
+}
+
+.panel {
+    background: #0a0a0a;
+    border: 1px solid #1a1a1a;
+    padding: 24px;
+}
+
+.panel h2 {
+    color: #ffffff;
+    margin-bottom: 24px;
+    font-size: 1.25em;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+}
+
+.input-group {
+    margin-bottom: 20px;
+}
+
+.input-group label {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 8px;
+    color: #ffffff;
+    font-size: 0.875em;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #1a1a1a;
+    background: #000000;
+    color: #ffffff;
+    font-size: 0.875em;
+    transition: border-color 0.2s;
+}
+
+.input-group input:focus {
+    outline: none;
+    border-color: #ffffff;
+}
+
+.input-group small {
+    display: block;
+    margin-top: 6px;
+    color: #666666;
+    font-size: 0.75em;
+}
+
+button {
+    width: 100%;
+    padding: 12px 16px;
+    margin-bottom: 8px;
+    font-size: 0.875em;
+    font-weight: 500;
+    border: 1px solid #1a1a1a;
+    cursor: pointer;
+    transition: all 0.15s;
+    background: #0a0a0a;
+    color: #ffffff;
+}
+
+button:hover:not(:disabled) {
+    background: #1a1a1a;
+    border-color: #2a2a2a;
+}
+
+button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.btn-primary {
+    background: #ffffff;
+    color: #000000;
+    border: 1px solid #ffffff;
+}
+
+.btn-primary:hover:not(:disabled) {
+    background: #f0f0f0;
+}
+
+.btn-success {
+    background: #0a0a0a;
+    color: #00ff00;
+    border: 1px solid #00ff00;
+}
+
+.btn-success:hover:not(:disabled) {
+    background: #001a00;
+}
+
+.btn-danger {
+    background: #0a0a0a;
+    color: #ff0000;
+    border: 1px solid #ff0000;
+}
+
+.btn-danger:hover:not(:disabled) {
+    background: #1a0000;
+}
+
+#canvas-container {
+    position: relative;
+    background: #0a0a0a;
+    border: 1px solid #1a1a1a;
+    padding: 24px;
+    min-height: 600px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#gridCanvas {
+    border: 1px solid #1a1a1a;
+    display: block;
+    margin: 0 auto;
+    background: #000000;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.stat-card {
+    background: #000000;
+    border: 1px solid #1a1a1a;
+    padding: 20px;
+    text-align: center;
+}
+
+.stat-card h3 {
+    color: #ffffff;
+    font-size: 2em;
+    margin-bottom: 6px;
+    font-weight: 600;
+}
+
+.stat-card p {
+    color: #666666;
+    font-size: 0.75em;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+#chart-container {
+    margin-top: 20px;
+    background: #0a0a0a;
+    border: 1px solid #1a1a1a;
+    padding: 24px;
+}
+
+#chart {
+    width: 100%;
+    height: 300px;
+}
+
+.status-message {
+    padding: 12px 16px;
+    margin-bottom: 20px;
+    text-align: center;
+    font-size: 0.875em;
+    border: 1px solid;
+}
+
+.status-success {
+    background: #001a00;
+    color: #00ff00;
+    border-color: #00ff00;
+}
+
+.status-error {
+    background: #1a0000;
+    color: #ff0000;
+    border-color: #ff0000;
+}
+
+.status-info {
+    background: #0a0a0a;
+    color: #ffffff;
+    border-color: #1a1a1a;
+}
+
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.7; }
+    100% { opacity: 1; }
+}
+
+.training {
+    animation: pulse 1.5s infinite;
+}

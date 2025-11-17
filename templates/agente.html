@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agente Buscador de Tesoros</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='agente.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Agente Buscador de Tesoros</h1>
+            <p>Q-Learning en Tiempo Real</p>
+            <a href="{{url_for('index')}}">Volver al Inicio</a>
+        </header>
+
+        <div class="main-content">
+            <div>
+                <div class="panel">
+                    <h2>Configuración</h2>
+
+                    <div class="input-group">
+                        <label for="size">Tamaño del Grid:</label>
+                        <input type="number" id="size" value="10" min="5" max="20">
+                        <small>Tamaño de la cuadrícula</small>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="num_trampas">Número de Trampas:</label>
+                        <input type="number" id="num_trampas" value="10" min="1" max="50">
+                        <small>Obstáculos a evitar</small>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="max_pasos">Máx. Pasos por Episodio:</label>
+                        <input type="number" id="max_pasos" value="200" min="50" max="500">
+                        <small>Límite de pasos</small>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="num_episodios">Número de Episodios:</label>
+                        <input type="number" id="num_episodios" value="100" min="10" max="500">
+                        <small>Veces que practicará</small>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="velocidad">Velocidad (ms):</label>
+                        <input type="range" id="velocidad" min="1" max="100" value="10">
+                        <small>Delay entre pasos: <span id="velocidad-valor">10</span>ms</small>
+                    </div>
+
+                    <button class="btn-primary" onclick="configurar()">Configurar</button>
+                    <button class="btn-success" id="btnIniciar" onclick="iniciarEntrenamiento()" disabled>Iniciar</button>
+                    <button class="btn-danger" id="btnDetener" onclick="detenerEntrenamiento()" disabled>Detener</button>
+                    <a href="/" style="text-decoration: none;">
+                        <button style="background: #0a0a0a; color: #ffffff; border: 1px solid #1a1a1a; margin-top: 10px;">Inicio</button>
+                    </a>
+                </div>
+
+                <!-- Estadísticas -->
+                <div class="panel" style="margin-top: 20px;">
+                    <h2>Métricas</h2>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <h3 id="episodioActual">0</h3>
+                            <p>Episodio Actual</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3 id="pasosActuales">0</h3>
+                            <p>Pasos</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3 id="victorias">0</h3>
+                            <p>Victorias</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3 id="tasaExito">0%</h3>
+                            <p>Tasa de Éxito</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Visualización -->
+            <div>
+                <div id="status-message"></div>
+
+                <div id="canvas-container">
+                    <canvas id="gridCanvas"></canvas>
+                </div>
+
+                <div id="chart-container">
+                    <canvas id="chart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        let ws = null;
+        let canvas = document.getElementById('gridCanvas');
+        let ctx = canvas.getContext('2d');
+        let chart = null;
+        let chartData = {
+            episodios: [],
+            pasos: [],
+            colores: []
+        };
+
+        // Actualizar slider de velocidad
+        document.getElementById('velocidad').addEventListener('input', (e) => {
+            document.getElementById('velocidad-valor').textContent = e.target.value;
+        });
+
+        function mostrarMensaje(mensaje, tipo = 'info') {
+            const statusDiv = document.getElementById('status-message');
+            statusDiv.className = `status-message status-${tipo}`;
+            statusDiv.textContent = mensaje;
+            statusDiv.style.display = 'block';
+        }
+
+        async function configurar() {
+            const config = {
+                size: parseInt(document.getElementById('size').value),
+                num_trampas: parseInt(document.getElementById('num_trampas').value),
+                max_pasos: parseInt(document.getElementById('max_pasos').value),
+                alpha: 0.1,
+                gamma: 0.9,
+                epsilon: 0.1
+            };
+
+            try {
+                const response = await fetch('/api/configurar', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(config)
+                });
+
+                const data = await response.json();
+
+                if (data.status === 'success') {
+                    mostrarMensaje('Entorno configurado correctamente', 'success');
+                    document.getElementById('btnIniciar').disabled = false;
+                    dibujarGrid(data.entorno);
+                    inicializarGrafica();
+                } else {
+                    mostrarMensaje('Error al configurar: ' + data.mensaje, 'error');
+                }
+            } catch (error) {
+                mostrarMensaje('Error: ' + error.message, 'error');
+            }
+        }
+
+        function inicializarGrafica() {
+            chartData = {
+                episodios: [],
+                pasos: [],
+                colores: []
+            };
+
+            if (chart) {
+                chart.destroy();
+            }
+
+            const chartCtx = document.getElementById('chart').getContext('2d');
+            chart = new Chart(chartCtx, {
+                type: 'bar',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Pasos por Episodio',
+                        data: [],
+                        backgroundColor: [],
+                        borderColor: [],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Número de Pasos',
+                                color: '#888888'
+                            },
+                            ticks: {
+                                color: '#666666'
+                            },
+                            grid: {
+                                color: '#1a1a1a'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Episodio',
+                                color: '#888888'
+                            },
+                            ticks: {
+                                color: '#666666'
+                            },
+                            grid: {
+                                color: '#1a1a1a'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: true,
+                            labels: {
+                                color: '#888888'
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: 'Historial de Entrenamiento (Verde=Éxito, Rojo=Fallo)',
+                            color: '#ffffff'
+                        }
+                    }
+                }
+            });
+        }
+
+        function actualizarGrafica(episodio, pasos, exito) {
+            const color = exito ? 'rgba(0, 255, 0, 0.7)' : 'rgba(255, 0, 0, 0.7)';
+            const borderColor = exito ? 'rgba(0, 255, 0, 1)' : 'rgba(255, 0, 0, 1)';
+
+            chartData.episodios.push(episodio);
+            chartData.pasos.push(pasos);
+            chartData.colores.push({bg: color, border: borderColor});
+
+            // Mantener solo últimos 50 episodios
+            if (chartData.episodios.length > 50) {
+                chartData.episodios.shift();
+                chartData.pasos.shift();
+                chartData.colores.shift();
+            }
+
+            chart.data.labels = chartData.episodios;
+            chart.data.datasets[0].data = chartData.pasos;
+            chart.data.datasets[0].backgroundColor = chartData.colores.map(c => c.bg);
+            chart.data.datasets[0].borderColor = chartData.colores.map(c => c.border);
+            chart.update('none');
+        }
+
+        function dibujarGrid(grid) {
+            const cellSize = Math.min(700 / grid.size, 70);
+            canvas.width = grid.size * cellSize;
+            canvas.height = grid.size * cellSize;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            for (let i = 0; i < grid.size; i++) {
+                for (let j = 0; j < grid.size; j++) {
+                    ctx.strokeStyle = '#1a1a1a';
+                    ctx.strokeRect(j * cellSize, i * cellSize, cellSize, cellSize);
+                }
+            }
+
+            grid.trampas.forEach(trampa => {
+                ctx.fillStyle = 'rgba(255, 0, 0, 0.2)';
+                ctx.fillRect(trampa[1] * cellSize, trampa[0] * cellSize, cellSize, cellSize);
+                ctx.fillStyle = '#ff0000';
+                ctx.font = `${cellSize * 0.5}px Arial`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('💀', (trampa[1] + 0.5) * cellSize, (trampa[0] + 0.5) * cellSize);
+            });
+
+            ctx.fillStyle = 'rgba(255, 215, 0, 0.2)';
+            ctx.fillRect(grid.tesoro[1] * cellSize, grid.tesoro[0] * cellSize, cellSize, cellSize);
+            ctx.fillStyle = '#ffd700';
+            ctx.font = `${cellSize * 0.6}px Arial`;
+            ctx.fillText('💎', (grid.tesoro[1] + 0.5) * cellSize, (grid.tesoro[0] + 0.5) * cellSize);
+
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+            ctx.fillRect(grid.agente[1] * cellSize, grid.agente[0] * cellSize, cellSize, cellSize);
+            ctx.fillStyle = '#ffffff';
+            ctx.font = `${cellSize * 0.6}px Arial`;
+            ctx.fillText('🤖', (grid.agente[1] + 0.5) * cellSize, (grid.agente[0] + 0.5) * cellSize);
+        }
+
+        function iniciarEntrenamiento() {
+            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsUrl = `${protocol}//${window.location.host}/ws/entrenar`;
+
+            ws = new WebSocket(wsUrl);
+
+            ws.onopen = () => {
+                mostrarMensaje('Entrenamiento en progreso...', 'info');
+                document.getElementById('btnIniciar').disabled = true;
+                document.getElementById('btnDetener').disabled = false;
+                canvas.classList.add('training');
+
+                const config = {
+                    num_episodios: parseInt(document.getElementById('num_episodios').value),
+                    velocidad: parseInt(document.getElementById('velocidad').value) / 1000
+                };
+
+                ws.send(JSON.stringify(config));
+            };
+
+            ws.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+
+                if (data.tipo === 'paso') {
+                    dibujarGrid(data.grid);
+                    document.getElementById('episodioActual').textContent = data.episodio;
+                    document.getElementById('pasosActuales').textContent = data.pasos;
+                }
+                else if (data.tipo === 'episodio_completo') {
+                    document.getElementById('victorias').textContent = data.victorias;
+                    document.getElementById('tasaExito').textContent = data.tasa_exito.toFixed(1) + '%';
+                    actualizarGrafica(data.episodio, data.pasos, data.exito);
+                }
+                else if (data.tipo === 'entrenamiento_completo') {
+                    mostrarMensaje(`Entrenamiento completado! ${data.victorias}/${data.episodios_totales} victorias (${data.tasa_exito_final.toFixed(1)}%)`, 'success');
+                    document.getElementById('btnIniciar').disabled = false;
+                    document.getElementById('btnDetener').disabled = true;
+                    canvas.classList.remove('training');
+                    ws.close();
+                }
+                else if (data.tipo === 'error') {
+                    mostrarMensaje('Error: ' + data.mensaje, 'error');
+                }
+            };
+
+            ws.onerror = () => {
+                mostrarMensaje('Error de conexión', 'error');
+                document.getElementById('btnIniciar').disabled = false;
+                document.getElementById('btnDetener').disabled = true;
+                canvas.classList.remove('training');
+            };
+
+            ws.onclose = () => {
+                canvas.classList.remove('training');
+            };
+        }
+
+        async function detenerEntrenamiento() {
+            if (ws) {
+                ws.close();
+            }
+
+            await fetch('/api/detener', {method: 'POST'});
+
+            mostrarMensaje('Entrenamiento detenido', 'info');
+            document.getElementById('btnIniciar').disabled = false;
+            document.getElementById('btnDetener').disabled = true;
+            canvas.classList.remove('training');
+        }
+    </script>
+</body>
+</html>

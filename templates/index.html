@@ -1,11 +1,173 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Aprendizaje por Refuerzo</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
 </head>
 <body>
-    <h1>Aprendizaje reforzado</h1>
+    <nav class="navbar">
+        <div class="nav-content">
+            <h2>Reinforcement Learning</h2>
+            <a href="/agente" class="nav-btn">Demo Interactiva</a>
+        </div>
+    </nav>
+
+    <main class="content">
+        <section class="hero">
+            <h1>Aprendizaje por Refuerzo</h1>
+            <p class="subtitle">Un paradigma del aprendizaje automático donde un agente aprende a tomar decisiones mediante la interacción con un entorno</p>
+        </section>
+
+        <section class="section">
+            <p class="intro">
+                El Aprendizaje por Refuerzo (Reinforcement Learning) es un paradigma del aprendizaje automático en el que un agente aprende a tomar decisiones mediante la interacción con un entorno. Según Sutton & Barto (2015), el agente recibe recompensas en función de sus acciones y busca maximizar la suma acumulada de estas recompensas a lo largo del tiempo. A diferencia de otros enfoques, no aprende a partir de ejemplos etiquetados, sino por medio de ensayo y error.
+            </p>
+        </section>
+
+        <section class="section">
+            <h2>1. ¿En qué se diferencia de otros paradigmas?</h2>
+            <p>
+                El aprendizaje supervisado utiliza datos etiquetados; el no supervisado descubre patrones sin etiquetas. En cambio, el aprendizaje por refuerzo no opera con datos estáticos: el agente genera su propia experiencia interactuando con el entorno. No recibe la acción correcta como guía, sino únicamente señales de recompensa, a menudo incompletas o retardadas, y debe descubrir qué acciones maximizan el retorno a largo plazo.
+            </p>
+        </section>
+
+        <section class="section">
+            <h2>2. Componentes del modelo de Reinforcement Learning</h2>
+            <p>
+                El proceso de RL se basa en una relación continua entre agente y entorno. En cada paso, el agente observa el estado, toma una acción según su política y recibe una recompensa junto con el nuevo estado. Este ciclo se repite, y el objetivo es aprender una política que maximice las recompensas acumuladas.
+            </p>
+
+            <div class="components-grid">
+                <div class="component-card">
+                    <h3>Agente</h3>
+                    <p>Es quien toma decisiones. Puede ser un robot, un programa de trading o un controlador de tráfico. Recibe observaciones, procesa la información y elige acciones buscando maximizar la recompensa futura.</p>
+                </div>
+
+                <div class="component-card">
+                    <h3>Entorno</h3>
+                    <p>Representa "el mundo" con el que el agente interactúa. Determina cómo cambian los estados y qué recompensas resultan de cada acción.</p>
+                </div>
+
+                <div class="component-card">
+                    <h3>Estado</h3>
+                    <p>Es la información relevante del entorno en un momento dado. Puede corresponder a variables físicas, configuraciones de un sistema, un tablero de juego o representaciones generadas por redes neuronales.</p>
+                </div>
+
+                <div class="component-card">
+                    <h3>Acción</h3>
+                    <p>Es la decisión que ejecuta el agente dentro del entorno. Puede pertenecer a un espacio discreto o continuo. Su elección depende del objetivo del agente y de su política.</p>
+                </div>
+
+                <div class="component-card">
+                    <h3>Recompensa</h3>
+                    <p>Es una señal escalar que indica qué tan buena o mala fue la acción tomada. Aunque puede ser escasa o retardada, es la guía fundamental para el aprendizaje del agente.</p>
+                </div>
+
+                <div class="component-card">
+                    <h3>Política</h3>
+                    <p>Es la regla que define qué acción tomar en cada estado. Puede ser determinística o estocástica. La política es el núcleo del comportamiento del agente.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>3. Ciclo de aprendizaje del agente</h2>
+            <p>El entrenamiento en RL se basa en tres conceptos fundamentales:</p>
+
+            <div class="concept-list">
+                <div class="concept-item">
+                    <h3>Exploración vs Explotación</h3>
+                    <p>Explorar significa probar nuevas acciones para descubrir mejores recompensas; explotar implica elegir la mejor acción conocida. Un exceso de exploración lleva a acciones subóptimas; un exceso de explotación puede estancar al agente en políticas no óptimas.</p>
+                </div>
+
+                <div class="concept-item">
+                    <h3>Retorno Acumulado</h3>
+                    <p>Es la suma de las recompensas que el agente espera recibir desde un instante hasta el final del episodio. El objetivo es maximizar este retorno total.</p>
+                </div>
+
+                <div class="concept-item">
+                    <h3>Descuento Temporal</h3>
+                    <p>Para valorar menos las recompensas lejanas y estabilizar el aprendizaje, se usa un factor gamma (γ) que reduce el peso de recompensas futuras.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>4. Principales algoritmos de RL</h2>
+
+            <div class="algorithm-list">
+                <div class="algorithm-item">
+                    <h3>Q-Learning</h3>
+                    <p>Es un método off-policy que aprende el valor óptimo de cada par estado-acción sin seguir necesariamente la política usada durante la exploración. Se emplea en entornos con espacios de estado pequeños, juegos y problemas de control simples.</p>
+                </div>
+
+                <div class="algorithm-item">
+                    <h3>SARSA</h3>
+                    <p>Es un método on-policy: actualiza los valores según la acción efectivamente tomada por la política del agente, no según la mejor posible. Se usa cuando la exploración puede ser riesgosa y se busca un comportamiento más seguro.</p>
+                </div>
+
+                <div class="algorithm-item">
+                    <h3>Deep Q-Network (DQN)</h3>
+                    <p>Extiende Q-Learning utilizando redes neuronales profundas para aproximar la función Q. Es ideal en entornos complejos, como aquellos representados por imágenes o variables de alta dimensión.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>5. Buenas prácticas en Reinforcement Learning</h2>
+
+            <div class="practices-list">
+                <div class="practice-item">
+                    <h3>Estabilidad del aprendizaje</h3>
+                    <p>En métodos profundos como DQN, es común que las estimaciones sean inestables. Se recomienda el uso de replay buffer para romper la correlación entre experiencias, y regularización por entropía para evitar que la política se vuelva determinista demasiado pronto.</p>
+                </div>
+
+                <div class="practice-item">
+                    <h3>Tasa de exploración</h3>
+                    <p>Usar estrategias de exploración decreciente como ε-greedy permite que el agente explore ampliamente al inicio y luego explote conocimiento adquirido. También existen técnicas modernas que separan políticas de exploración y explotación, como Decoupled RL.</p>
+                </div>
+
+                <div class="practice-item">
+                    <h3>Manejo de recompensas</h3>
+                    <p>El uso de reward shaping puede guiar al agente con recompensas intermedias para acelerar el aprendizaje; sin embargo, debe diseñarse cuidadosamente para evitar que el agente optimice una meta equivocada.</p>
+                </div>
+
+                <div class="practice-item">
+                    <h3>Convergencia y generalización</h3>
+                    <p>Es crucial ajustar hiperparámetros como tasa de aprendizaje, factor de descuento, tamaño de batch y frecuencia de actualización de redes objetivo. Entrenar en múltiples variaciones del entorno mejora la generalización y evita que la política se sobreajuste.</p>
+                </div>
+            </div>
+        </section>
+
+        <footer class="footer">
+            <p>Basado en Sutton & Barto (2015), GeekForGeeks (2025), OpenAI Spinning Group, y otras fuentes académicas.</p>
+            <p>Universidad de Cundinamarca | Dylan B. | Mayra C. | Miguel G. | Pedro Casas </p>
+        </footer>
+    </main>
+
+    <div class="floating-demo" id="floatingDemo">
+        <button class="close-btn" onclick="closeDemo()">&times;</button>
+        <div class="demo-content">
+            <div class="demo-icon">🤖</div>
+            <h3>Buscador de Tesoros</h3>
+            <p>Entrena un agente inteligente usando Q-Learning en tiempo real</p>
+            <a href="/agente" class="demo-btn">Probar Demo</a>
+        </div>
+    </div>
+
+    <script>
+        window.addEventListener('scroll', function() {
+            const demo = document.getElementById('floatingDemo');
+            if (window.scrollY > 300) {
+                demo.classList.add('visible');
+            }
+        });
+
+        function closeDemo() {
+            document.getElementById('floatingDemo').style.display = 'none';
+        }
+    </script>
 </body>
 </html>
