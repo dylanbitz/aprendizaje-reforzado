@@ -5,51 +5,56 @@
 }
 
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    padding: 20px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+    background: #000000;
+    color: #ffffff;
     min-height: 100vh;
 }
 
 .container {
-    max-width: 1600px;
+    max-width: 1800px;
     margin: 0 auto;
-    background: white;
-    border-radius: 20px;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-    overflow: hidden;
+    background: #000000;
 }
 
 header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    padding: 30px;
-    text-align: center;
+    background: #000000;
+    color: #ffffff;
+    padding: 40px 40px 20px;
+    border-bottom: 1px solid #1a1a1a;
 }
 
 header h1 {
     font-size: 2.5em;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+}
+
+header p {
+    color: #888888;
+    font-size: 1em;
 }
 
 .main-content {
-    padding: 30px;
+    padding: 40px;
     display: grid;
-    grid-template-columns: 350px 1fr;
-    gap: 30px;
+    grid-template-columns: 380px 1fr;
+    gap: 40px;
 }
 
 .panel {
-    background: #f8f9fa;
-    border-radius: 15px;
-    padding: 25px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    background: #0a0a0a;
+    border: 1px solid #1a1a1a;
+    padding: 24px;
 }
 
 .panel h2 {
-    color: #667eea;
-    margin-bottom: 20px;
-    font-size: 1.5em;
+    color: #ffffff;
+    margin-bottom: 24px;
+    font-size: 1.25em;
+    font-weight: 600;
+    letter-spacing: -0.01em;
 }
 
 .input-group {
@@ -58,73 +63,92 @@ header h1 {
 
 .input-group label {
     display: block;
-    font-weight: bold;
+    font-weight: 500;
     margin-bottom: 8px;
-    color: #333;
+    color: #ffffff;
+    font-size: 0.875em;
 }
 
 .input-group input {
     width: 100%;
-    padding: 12px;
-    border: 2px solid #ddd;
-    border-radius: 8px;
-    font-size: 1em;
+    padding: 10px 12px;
+    border: 1px solid #1a1a1a;
+    background: #000000;
+    color: #ffffff;
+    font-size: 0.875em;
+    transition: border-color 0.2s;
 }
 
 .input-group input:focus {
     outline: none;
-    border-color: #667eea;
+    border-color: #ffffff;
 }
 
 .input-group small {
     display: block;
-    margin-top: 5px;
-    color: #666;
-    font-size: 0.9em;
+    margin-top: 6px;
+    color: #666666;
+    font-size: 0.75em;
 }
 
 button {
     width: 100%;
-    padding: 15px;
-    margin-bottom: 10px;
-    font-size: 1.1em;
-    font-weight: bold;
-    border: none;
-    border-radius: 10px;
+    padding: 12px 16px;
+    margin-bottom: 8px;
+    font-size: 0.875em;
+    font-weight: 500;
+    border: 1px solid #1a1a1a;
     cursor: pointer;
-    transition: all 0.3s;
+    transition: all 0.15s;
+    background: #0a0a0a;
+    color: #ffffff;
 }
 
 button:hover:not(:disabled) {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+    background: #1a1a1a;
+    border-color: #2a2a2a;
 }
 
 button:disabled {
-    opacity: 0.5;
+    opacity: 0.4;
     cursor: not-allowed;
 }
 
 .btn-primary {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
+    background: #ffffff;
+    color: #000000;
+    border: 1px solid #ffffff;
+}
+
+.btn-primary:hover:not(:disabled) {
+    background: #f0f0f0;
 }
 
 .btn-success {
-    background: linear-gradient(135deg, #56ab2f 0%, #a8e063 100%);
-    color: white;
+    background: #0a0a0a;
+    color: #00ff00;
+    border: 1px solid #00ff00;
+}
+
+.btn-success:hover:not(:disabled) {
+    background: #001a00;
 }
 
 .btn-danger {
-    background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
-    color: white;
+    background: #0a0a0a;
+    color: #ff0000;
+    border: 1px solid #ff0000;
+}
+
+.btn-danger:hover:not(:disabled) {
+    background: #1a0000;
 }
 
 #canvas-container {
     position: relative;
-    background: #f0f0f0;
-    border-radius: 15px;
-    padding: 20px;
+    background: #0a0a0a;
+    border: 1px solid #1a1a1a;
+    padding: 24px;
     min-height: 600px;
     display: flex;
     align-items: center;
@@ -132,43 +156,45 @@ button:disabled {
 }
 
 #gridCanvas {
-    border: 3px solid #667eea;
-    border-radius: 10px;
+    border: 1px solid #1a1a1a;
     display: block;
     margin: 0 auto;
-    background: white;
+    background: #000000;
 }
 
 .stats-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 15px;
+    gap: 12px;
     margin-bottom: 20px;
 }
 
 .stat-card {
-    background: white;
+    background: #000000;
+    border: 1px solid #1a1a1a;
     padding: 20px;
-    border-radius: 10px;
     text-align: center;
 }
 
 .stat-card h3 {
-    color: #667eea;
+    color: #ffffff;
     font-size: 2em;
-    margin-bottom: 5px;
+    margin-bottom: 6px;
+    font-weight: 600;
 }
 
 .stat-card p {
-    color: #666;
-    font-size: 0.9em;
+    color: #666666;
+    font-size: 0.75em;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
 }
 
 #chart-container {
     margin-top: 20px;
-    background: white;
-    padding: 20px;
-    border-radius: 10px;
+    background: #0a0a0a;
+    border: 1px solid #1a1a1a;
+    padding: 24px;
 }
 
 #chart {
@@ -177,34 +203,37 @@ button:disabled {
 }
 
 .status-message {
-    padding: 15px;
-    border-radius: 10px;
+    padding: 12px 16px;
     margin-bottom: 20px;
     text-align: center;
-    font-weight: bold;
+    font-size: 0.875em;
+    border: 1px solid;
 }
 
 .status-success {
-    background: #d4edda;
-    color: #155724;
+    background: #001a00;
+    color: #00ff00;
+    border-color: #00ff00;
 }
 
 .status-error {
-    background: #f8d7da;
-    color: #721c24;
+    background: #1a0000;
+    color: #ff0000;
+    border-color: #ff0000;
 }
 
 .status-info {
-    background: #d1ecf1;
-    color: #0c5460;
+    background: #0a0a0a;
+    color: #ffffff;
+    border-color: #1a1a1a;
 }
 
 @keyframes pulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.05); }
-    100% { transform: scale(1); }
+    0% { opacity: 1; }
+    50% { opacity: 0.7; }
+    100% { opacity: 1; }
 }
 
 .training {
-    animation: pulse 1s infinite;
+    animation: pulse 1.5s infinite;
 }
