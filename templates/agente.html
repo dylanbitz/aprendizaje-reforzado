@@ -4,220 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Agente Buscador de Tesoros</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            padding: 20px;
-            min-height: 100vh;
-        }
-
-        .container {
-            max-width: 1600px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            overflow: hidden;
-        }
-
-        header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 30px;
-            text-align: center;
-        }
-
-        header h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-        }
-
-        .main-content {
-            padding: 30px;
-            display: grid;
-            grid-template-columns: 350px 1fr;
-            gap: 30px;
-        }
-
-        .panel {
-            background: #f8f9fa;
-            border-radius: 15px;
-            padding: 25px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-
-        .panel h2 {
-            color: #667eea;
-            margin-bottom: 20px;
-            font-size: 1.5em;
-        }
-
-        .input-group {
-            margin-bottom: 20px;
-        }
-
-        .input-group label {
-            display: block;
-            font-weight: bold;
-            margin-bottom: 8px;
-            color: #333;
-        }
-
-        .input-group input {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            font-size: 1em;
-        }
-
-        .input-group input:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-
-        .input-group small {
-            display: block;
-            margin-top: 5px;
-            color: #666;
-            font-size: 0.9em;
-        }
-
-        button {
-            width: 100%;
-            padding: 15px;
-            margin-bottom: 10px;
-            font-size: 1.1em;
-            font-weight: bold;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        button:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0,0,0,0.2);
-        }
-
-        button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-
-        .btn-success {
-            background: linear-gradient(135deg, #56ab2f 0%, #a8e063 100%);
-            color: white;
-        }
-
-        .btn-danger {
-            background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
-            color: white;
-        }
-
-        #canvas-container {
-            position: relative;
-            background: #f0f0f0;
-            border-radius: 15px;
-            padding: 20px;
-            min-height: 500px;
-        }
-
-        #gridCanvas {
-            border: 3px solid #667eea;
-            border-radius: 10px;
-            display: block;
-            margin: 0 auto;
-            background: white;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
-        .stat-card {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            text-align: center;
-        }
-
-        .stat-card h3 {
-            color: #667eea;
-            font-size: 2em;
-            margin-bottom: 5px;
-        }
-
-        .stat-card p {
-            color: #666;
-            font-size: 0.9em;
-        }
-
-        #chart-container {
-            margin-top: 20px;
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-        }
-
-        #chart {
-            width: 100%;
-            height: 300px;
-        }
-
-        .status-message {
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            text-align: center;
-            font-weight: bold;
-        }
-
-        .status-success {
-            background: #d4edda;
-            color: #155724;
-        }
-
-        .status-error {
-            background: #f8d7da;
-            color: #721c24;
-        }
-
-        .status-info {
-            background: #d1ecf1;
-            color: #0c5460;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-
-        .training {
-            animation: pulse 1s infinite;
-        }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='agente.css') }}">
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>🎮 Agente Buscador de Tesoros</h1>
+            <h1>Agente Buscador de Tesoros</h1>
             <p>Q-Learning en Tiempo Real</p>
         </header>
 
@@ -225,7 +17,7 @@
             <!-- Panel de Control -->
             <div>
                 <div class="panel">
-                    <h2>⚙️ Configuración</h2>
+                    <h2>Configuración</h2>
 
                     <div class="input-group">
                         <label for="size">Tamaño del Grid:</label>
@@ -257,14 +49,17 @@
                         <small>Delay entre pasos: <span id="velocidad-valor">10</span>ms</small>
                     </div>
 
-                    <button class="btn-primary" onclick="configurar()">🔧 Configurar</button>
-                    <button class="btn-success" id="btnIniciar" onclick="iniciarEntrenamiento()" disabled>▶️ Iniciar</button>
-                    <button class="btn-danger" id="btnDetener" onclick="detenerEntrenamiento()" disabled>⏹️ Detener</button>
+                    <button class="btn-primary" onclick="configurar()">Configurar</button>
+                    <button class="btn-success" id="btnIniciar" onclick="iniciarEntrenamiento()" disabled>Iniciar</button>
+                    <button class="btn-danger" id="btnDetener" onclick="detenerEntrenamiento()" disabled>Detener</button>
+                    <a href="/" style="text-decoration: none;">
+                        <button style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; margin-top: 10px;">Inicio</button>
+                    </a>
                 </div>
 
                 <!-- Estadísticas -->
                 <div class="panel" style="margin-top: 20px;">
-                    <h2>📊 Métricas</h2>
+                    <h2>Métricas</h2>
                     <div class="stats-grid">
                         <div class="stat-card">
                             <h3 id="episodioActual">0</h3>
@@ -345,15 +140,15 @@
                 const data = await response.json();
 
                 if (data.status === 'success') {
-                    mostrarMensaje('✅ Entorno configurado correctamente', 'success');
+                    mostrarMensaje('Entorno configurado correctamente', 'success');
                     document.getElementById('btnIniciar').disabled = false;
                     dibujarGrid(data.entorno);
                     inicializarGrafica();
                 } else {
-                    mostrarMensaje('❌ Error al configurar: ' + data.mensaje, 'error');
+                    mostrarMensaje('Error al configurar: ' + data.mensaje, 'error');
                 }
             } catch (error) {
-                mostrarMensaje('❌ Error: ' + error.message, 'error');
+                mostrarMensaje('Error: ' + error.message, 'error');
             }
         }
 
@@ -435,7 +230,7 @@
         }
 
         function dibujarGrid(grid) {
-            const cellSize = Math.min(500 / grid.size, 50);
+            const cellSize = Math.min(700 / grid.size, 70);
             canvas.width = grid.size * cellSize;
             canvas.height = grid.size * cellSize;
 
@@ -482,7 +277,7 @@
             ws = new WebSocket(wsUrl);
 
             ws.onopen = () => {
-                mostrarMensaje('🔄 Entrenamiento en progreso...', 'info');
+                mostrarMensaje('Entrenamiento en progreso...', 'info');
                 document.getElementById('btnIniciar').disabled = true;
                 document.getElementById('btnDetener').disabled = false;
                 canvas.classList.add('training');
@@ -509,19 +304,19 @@
                     actualizarGrafica(data.episodio, data.pasos, data.exito);
                 }
                 else if (data.tipo === 'entrenamiento_completo') {
-                    mostrarMensaje(`✅ Entrenamiento completado! ${data.victorias}/${data.episodios_totales} victorias (${data.tasa_exito_final.toFixed(1)}%)`, 'success');
+                    mostrarMensaje(`Entrenamiento completado! ${data.victorias}/${data.episodios_totales} victorias (${data.tasa_exito_final.toFixed(1)}%)`, 'success');
                     document.getElementById('btnIniciar').disabled = false;
                     document.getElementById('btnDetener').disabled = true;
                     canvas.classList.remove('training');
                     ws.close();
                 }
                 else if (data.tipo === 'error') {
-                    mostrarMensaje('❌ Error: ' + data.mensaje, 'error');
+                    mostrarMensaje('Error: ' + data.mensaje, 'error');
                 }
             };
 
             ws.onerror = () => {
-                mostrarMensaje('❌ Error de conexión', 'error');
+                mostrarMensaje('Error de conexión', 'error');
                 document.getElementById('btnIniciar').disabled = false;
                 document.getElementById('btnDetener').disabled = true;
                 canvas.classList.remove('training');
@@ -539,7 +334,7 @@
 
             await fetch('/api/detener', {method: 'POST'});
 
-            mostrarMensaje('⏹️ Entrenamiento detenido', 'info');
+            mostrarMensaje('Entrenamiento detenido', 'info');
             document.getElementById('btnIniciar').disabled = false;
             document.getElementById('btnDetener').disabled = true;
             canvas.classList.remove('training');
